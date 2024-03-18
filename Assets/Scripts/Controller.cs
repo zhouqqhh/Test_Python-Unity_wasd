@@ -83,45 +83,58 @@ public class Controller : MonoBehaviour
     }
 }
 
-    public void PlaceAgent(string[] parts)
+public void PlaceAgent(string[] parts)
+{
+    if (parts.Length == 4 && parts[3].ToLower() == "placeagent")
     {
-        if (parts.Length == 4 && parts[3].ToLower() == "placeagent")
+        if (float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float y) && float.TryParse(parts[2], out float z))
         {
-            if (float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float y) && float.TryParse(parts[2], out float z))
+            lock (actionsToExecuteOnMainThread)
             {
-                lock (actionsToExecuteOnMainThread)
+                actionsToExecuteOnMainThread.Enqueue(() =>
                 {
-                    actionsToExecuteOnMainThread.Enqueue(() =>
+                    Vector3 position = new Vector3(x, y, z);
+                    character = Instantiate(loadedCharacter, position, Quaternion.identity);
+
+                    // 确保character拥有Rigidbody组件
+                    Rigidbody charRigidbody = character.GetComponent<Rigidbody>();
+                    if (charRigidbody == null)
                     {
-                        Vector3 position = new Vector3(x, y, z);
-                        character = Instantiate(loadedCharacter, position, Quaternion.identity);
-                        
+                        charRigidbody = character.AddComponent<Rigidbody>();
+                        charRigidbody.useGravity = true; // 启用重力
+                    }
+
+                    // 为character添加CapsuleCollider组件
+                    CapsuleCollider charCollider = character.AddComponent<CapsuleCollider>();
+                    charCollider.radius = 0.075f; // 设置CapsuleCollider的半径
+                    charCollider.height = 0.15f;
+
                     Animator charAnimator = character.GetComponent<Animator>();
                     if (charAnimator == null)
                     {
-                        charAnimator = character.AddComponent<Animator>(); // 如果没有找到 Animator 组件，则添加一个
+                        charAnimator = character.AddComponent<Animator>(); // 如果没有找到Animator组件，则添加一个
                     }
 
                     RuntimeAnimatorController animatorController = Resources.Load<RuntimeAnimatorController>("Characters/WASD_AnimatorController");
                     if (animatorController != null)
                     {
                         charAnimator.runtimeAnimatorController = animatorController;
-                        animator = charAnimator; // 确保 Controller 脚本的 animator 变量指向这个 Animator 组件
+                        animator = charAnimator; // 确保Controller脚本的animator变量指向这个Animator组件
                     }
                     else
                     {
                         Debug.LogError("Failed to load Animator Controller from Resources.");
                     }
-
-                    });
-                }
-            }
-            else
-            {
-                Debug.LogError("Can not resolve position.");
+                });
             }
         }
+        else
+        {
+            Debug.LogError("Can not resolve position.");
+        }
     }
+}
+
     public void Command(string command)
     {
         string[] parts = command.Split(' ');

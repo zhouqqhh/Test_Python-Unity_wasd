@@ -4,8 +4,10 @@ Quick start:
 3. Start Unity scene (Play button on the top)
 4. Run Python script
 ```
-python ./Assets/Scripts/SocketWASDConnection.py
+sudo python ./Assets/Scripts/SocketWASDConnection.py
 ```
-5. Press "w", "a", "s", "d" to move character in scene
-6. Press "esc" to stop Python script
-7. Stop Unity scene (Click Play button on the top again)
+5. Press "ctrl" to load character.
+6. Press "space" to place character.
+7. Press "w", "a", "s", "d" to move character in scene
+8. Press "esc" to stop Python script
+9. Stop Unity scene (Click Play button on the top again)

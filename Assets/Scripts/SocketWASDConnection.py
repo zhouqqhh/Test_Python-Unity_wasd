@@ -48,8 +48,18 @@ def main():
 
         if event.event_type == keyboard.KEY_DOWN:
             print(event.name) # to check key name
+            if event.name is None:
+                continue
             if (event.name == "esc"):
                 break
+            if (event.name == "space"):
+                print("Sending: place agent")
+                client_socket.sendall(("0 0 0 placeagent").encode('utf-8'))
+                key_pressed = True
+            if (event.name == "ctrl"):
+                print("Sending: load agent")
+                client_socket.sendall(("Prefabs/X_Bot loadagent").encode('utf-8'))
+                key_pressed = True
             
             if key_pressed == False:
                 print("Sending: " + event.name + " down")
@@ -58,6 +68,8 @@ def main():
 
         elif event.event_type == keyboard.KEY_UP:
             print(event.name)
+            if event.name is None:
+                continue
             key_pressed = False
             print("Sending: " + event.name + " up")
             client_socket.sendall((event.name + " up").encode('utf-8'))

@@ -17,10 +17,12 @@ public class Connection : MonoBehaviour
 
     void Start()
     {
+        var dispatcher = MainThreadDispatcher.Instance;
         // Receive on a separate thread so Unity doesn't freeze waiting for data
         ThreadStart ts = new ThreadStart(GetData);
         thread = new Thread(ts);
         thread.Start();
+        // GetData();
     }
 
     void GetData()
